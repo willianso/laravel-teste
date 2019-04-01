@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
 	public function up()
 	{
 		Schema::create('users', function(Blueprint $table) {
-			$table->increments('id');
+			$table->bigIncrements('id');
 
 			//dados pessoa
 			$table->char('cpf', 11)->unique()->nullable();
@@ -50,6 +50,5 @@ class CreateUsersTable extends Migration
 			$table->increments('id');
 		});
 		
-		Schema::dropIfExists('table');
 	}
 }

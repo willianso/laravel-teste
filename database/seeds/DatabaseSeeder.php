@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             'cpf'=> '91289182', 
             'name'=> 'www',
              'email'=> 'www@www',
-              'password'=> bcrypt('123'),
+              'password'=> env('PASSWORD_HASH') ? bcrypt('123') : '123',
               'phone'=> '5555',
               'birth'=> '1999-01-01',
               'gender'=> 'M',

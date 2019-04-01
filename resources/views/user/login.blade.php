@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="uft-8" />
+        <meta charset="utf-8" />
         <link rel="stylesheet" href="{{ asset('css/estilo.css') }}">
         <title>Login</title>
     </head>
