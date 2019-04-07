@@ -7,24 +7,45 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\GroupCreateRequest;
+use App\Http\Requests\GroupUpdateRequest;
+use App\Repositories\GroupRepository;
+use App\Validators\GroupValidator;
+use App\Services\GroupService;
+use App\Repositories\InstituicaoRepository;
 use App\Repositories\UserRepository;
-use App\Services\UserService;
 
 /**
- * Class UsersController.
+ * Class GroupsController.
  *
  * @package namespace App\Http\Controllers;
  */
-class UsersController extends Controller
+class GroupsController extends Controller
 {
+    /**
+     * @var GroupRepository
+     */
     protected $repository;
-    protected $service;
 
-    public function __construct(UserRepository $repository, UserService $service)
+    /**
+     * @var GroupValidator
+     */
+    protected $service;
+    protected $instituicaoRepository;
+    protected $userRepository;
+
+    /**
+     * GroupsController constructor.
+     *
+     * @param GroupRepository $repository
+     * @param GroupValidator $validator
+     */
+    public function __construct(GroupRepository $repository, UserRepository $userRepository,
+        GroupService $service, InstituicaoRepository $instituicaoRepository)
     {
         $this->repository = $repository;
+        $this->instituicaoRepository = $instituicaoRepository;
+        $this->userRepository = $userRepository;
         $this->service  = $service;
     }
 
@@ -35,30 +56,32 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = $this->repository->all();
-        return view('user.index', ['usuario' => $users]);
+        $groups = $this->repository->all();
+        $inst = $this->instituicaoRepository->selectBoxList();
+        $usuarios = $this->userRepository->selectBoxList();
+        return view('groups.index', ['groups' => $groups, 'usuarios' => $usuarios, 'inst' => $inst]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  UserCreateRequest $request
+     * @param  GroupCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function store(UserCreateRequest $request)
+    public function store(GroupCreateRequest $request)
     {
-       $request = $this->service->store($request->all());
-       $usuario = $request['success'] ? $request['data'] : $request['messages'];
-
-        session()->flash('success', [
-            'success' => $request['success'],
-            'messages' => $request['messages']
-        ]);
-
-       return redirect()->route('user.index');
+        $request = $this->service->store($request->all());
+        $groups = $request['success'] ? $request['data'] : $request['messages'];
+ 
+         session()->flash('success', [
+             'success' => $request['success'],
+             'messages' => $request['messages']
+         ]);
+ 
+        return redirect()->route('group.index');
     }
 
     /**
@@ -70,16 +93,16 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $user = $this->repository->find($id);
+        $group = $this->repository->find($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $user,
+                'data' => $group,
             ]);
         }
 
-        return view('users.show', compact('user'));
+        return view('groups.show', compact('group'));
     }
 
     /**
@@ -91,32 +114,32 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->repository->find($id);
+        $group = $this->repository->find($id);
 
-        return view('users.edit', compact('user'));
+        return view('groups.edit', compact('group'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  UserUpdateRequest $request
+     * @param  GroupUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(GroupUpdateRequest $request, $id)
     {
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $user = $this->repository->update($request->all(), $id);
+            $group = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'User updated.',
-                'data'    => $user->toArray(),
+                'message' => 'Group updated.',
+                'data'    => $group->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -151,11 +174,11 @@ class UsersController extends Controller
     {
         $request = $this->service->destroy($id);
  
-         session()->flash('success', [
-             'success' => $request['success'],
-             'messages' => $request['messages']
-         ]);
- 
-        return redirect()->route('user.index');
+        session()->flash('success', [
+            'success' => $request['success'],
+            'messages' => $request['messages']
+        ]);
+
+        return redirect()->route('group.index');
     }
 }

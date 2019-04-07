@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\UserRepository;
-use App\Entities\User;
-use App\Validators\UserValidator;
+use App\Repositories\InstituicaoRepository;
+use App\Entities\Instituicao;
+use App\Validators\InstituicaoValidator;
 
 /**
- * Class UserRepositoryEloquent.
+ * Class InstituicaoRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class InstituicaoRepositoryEloquent extends BaseRepository implements InstituicaoRepository
 {
     public function selectBoxList($desc = 'name', $chave = 'id'){
         return $this->model->pluck($desc, $chave)->all();
@@ -25,7 +25,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      */
     public function model()
     {
-        return User::class;
+        return Instituicao::class;
     }
 
     /**
@@ -36,7 +36,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     public function validator()
     {
 
-        return UserValidator::class;
+        return InstituicaoValidator::class;
     }
 
 

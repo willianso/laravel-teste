@@ -6,11 +6,11 @@ use \Prettus\Validator\Contracts\ValidatorInterface;
 use \Prettus\Validator\LaravelValidator;
 
 /**
- * Class UserValidator.
+ * Class GroupValidator.
  *
  * @package namespace App\Validators;
  */
-class UserValidator extends LaravelValidator
+class GroupValidator extends LaravelValidator
 {
     /**
      * Validation Rules
@@ -19,10 +19,9 @@ class UserValidator extends LaravelValidator
      */
     protected $rules = [
         ValidatorInterface::RULE_CREATE => [
-            'cpf' => 'required',
             'name' => 'required',
-            'phone' => 'required',
-            'email' => 'required|unique:users,email'
+            'user_id' => 'required|exists:users,id',
+            'instituicao_id' =>'required|exists:instituicaos,id'
         ],
         ValidatorInterface::RULE_UPDATE => [],
     ];

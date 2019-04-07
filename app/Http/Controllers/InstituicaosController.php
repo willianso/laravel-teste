@@ -4,28 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserUpdateRequest;
-use App\Repositories\UserRepository;
-use App\Services\UserService;
+use App\Http\Requests\InstituicaoCreateRequest;
+use App\Http\Requests\InstituicaoUpdateRequest;
+use App\Repositories\InstituicaoRepository;
+use App\Validators\InstituicaoValidator;
+use App\Services\InstituicaoService;
 
 /**
- * Class UsersController.
+ * Class InstituicaosController.
  *
  * @package namespace App\Http\Controllers;
  */
-class UsersController extends Controller
+class InstituicaosController extends Controller
 {
+    
     protected $repository;
+
     protected $service;
 
-    public function __construct(UserRepository $repository, UserService $service)
+    /**
+     * InstituicaosController constructor.
+     *
+     * @param InstituicaoRepository $repository
+     * @param InstituicaoValidator $validator
+     */
+    public function __construct(InstituicaoRepository $repository, InstituicaoService $service)
     {
         $this->repository = $repository;
-        $this->service  = $service;
+        $this->service = $service;
     }
 
     /**
@@ -35,30 +43,30 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = $this->repository->all();
-        return view('user.index', ['usuario' => $users]);
+        $inst = $this->repository->all();
+        return view('instituicao.index', ['inst' => $inst]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  UserCreateRequest $request
+     * @param  InstituicaoCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function store(UserCreateRequest $request)
+    public function store(InstituicaoCreateRequest $request)
     {
-       $request = $this->service->store($request->all());
-       $usuario = $request['success'] ? $request['data'] : $request['messages'];
+        $request = $this->service->store($request->all());
+        $inst = $request['success'] ? $request['data'] : $request['messages'];
 
         session()->flash('success', [
             'success' => $request['success'],
             'messages' => $request['messages']
         ]);
 
-       return redirect()->route('user.index');
+       return redirect()->route('instituicao.index');
     }
 
     /**
@@ -70,16 +78,16 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $user = $this->repository->find($id);
+        $instituicao = $this->repository->find($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $user,
+                'data' => $instituicao,
             ]);
         }
 
-        return view('users.show', compact('user'));
+        return view('instituicaos.show', compact('instituicao'));
     }
 
     /**
@@ -91,32 +99,32 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->repository->find($id);
+        $instituicao = $this->repository->find($id);
 
-        return view('users.edit', compact('user'));
+        return view('instituicaos.edit', compact('instituicao'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  UserUpdateRequest $request
+     * @param  InstituicaoUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(InstituicaoUpdateRequest $request, $id)
     {
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $user = $this->repository->update($request->all(), $id);
+            $instituicao = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'User updated.',
-                'data'    => $user->toArray(),
+                'message' => 'Instituicao updated.',
+                'data'    => $instituicao->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -149,13 +157,16 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        $request = $this->service->destroy($id);
- 
-         session()->flash('success', [
-             'success' => $request['success'],
-             'messages' => $request['messages']
-         ]);
- 
-        return redirect()->route('user.index');
+        $deleted = $this->repository->delete($id);
+
+        if (request()->wantsJson()) {
+
+            return response()->json([
+                'message' => 'Instituicao deleted.',
+                'deleted' => $deleted,
+            ]);
+        }
+
+        return redirect()->back()->with('message', 'Instituicao deleted.');
     }
 }
