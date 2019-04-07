@@ -13,31 +13,5 @@
         @include('templates.formulario.submit', ['input' => 'Cadastrar'])
     {!! Form::close() !!}
 
-	<table class="default-table">
-			<thead>
-				<tr>
-					<td>#</td>
-					<td>Grupo</td>
-					<td>Instituição</td>
-					<td>Usuário</td>
-					<td>Opções</td>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach($groups as $g)
-				<tr>
-					<td>{{ $g->id }}</td>
-					<td>{{ $g->name }}</td>
-					<td>{{ $g->user_id }}</td>
-					<td>{{ $g->instituicao_id }}</td>
-					<td>
-						{!! Form::open(['route' => ['group.destroy', $g->id], 'method' => 'DELETE']) !!}
-							{!! Form::submit('Remover') !!}
-						{!! Form::close() !!}
-						<a href="{{ route('group.edit', $g->id) }}">Editar</a>
-					</td>
-				</tr>
-				@endforeach
-			</tbody>
-	</table>
+	@include('groups.list', ['groups_list' => $groups])
 @endsection

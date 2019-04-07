@@ -80,14 +80,7 @@ class InstituicaosController extends Controller
     {
         $instituicao = $this->repository->find($id);
 
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $instituicao,
-            ]);
-        }
-
-        return view('instituicaos.show', compact('instituicao'));
+        return view('instituicao.show', ['inst' => $instituicao]);
     }
 
     /**
