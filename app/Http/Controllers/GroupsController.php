@@ -14,6 +14,7 @@ use App\Validators\GroupValidator;
 use App\Services\GroupService;
 use App\Repositories\InstituicaoRepository;
 use App\Repositories\UserRepository;
+use App\Entities\Group;
 
 /**
  * Class GroupsController.
@@ -84,6 +85,17 @@ class GroupsController extends Controller
         return redirect()->route('group.index');
     }
 
+    public function userStore(Request $request, $group_id){
+        $request = $this->service->userStore($request->all(), $group_id);
+ 
+         session()->flash('success', [
+             'success' => $request['success'],
+             'messages' => $request['messages']
+         ]);
+ 
+        return redirect()->route('group.show', $group_id);
+    }
+
     /**
      * Display the specified resource.
      *
@@ -94,15 +106,8 @@ class GroupsController extends Controller
     public function show($id)
     {
         $group = $this->repository->find($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $group,
-            ]);
-        }
-
-        return view('groups.show', compact('group'));
+        $user_list = $this->userRepository->selectBoxList();
+        return view('groups.show', ['group' => $group, 'user_list' => $user_list]);
     }
 
     /**
@@ -114,9 +119,11 @@ class GroupsController extends Controller
      */
     public function edit($id)
     {
-        $group = $this->repository->find($id);
+        $group = Group::find($id);
+        $inst = $this->instituicaoRepository->selectBoxList();
+        $usuarios = $this->userRepository->selectBoxList();
 
-        return view('groups.edit', compact('group'));
+        return view('groups.edit', ['group' => $group, 'inst' => $inst, 'usuarios' => $usuarios]);
     }
 
     /**
@@ -129,37 +136,16 @@ class GroupsController extends Controller
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(GroupUpdateRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        try {
+        $request = $this->service->update($request->all(), $id);
+ 
+        session()->flash('success', [
+            'success' => $request['success'],
+            'messages' => $request['messages']
+        ]);
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $group = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Group updated.',
-                'data'    => $group->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+       return redirect()->route('group.index');
     }
 
 

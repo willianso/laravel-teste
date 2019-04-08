@@ -19,28 +19,28 @@
 			  </a>  
 		</li>
 		<li>
-			{{--  <a href="{{ route('moviment.application') }}">  --}}
+			  <a href="{{ route('movement.application') }}">  
 				<i class="fa fa-money"></i>
 				<h3>Investir</h3>
-			{{--  </a>  --}}
+			  </a>  
 		</li>
 		<li>
-			{{--  <a href="{{ route('moviment.getback') }}">  --}}
+			 <a href="#"> 
 				<i class="fa fa-money"></i>
 				<h3>Resgatar</h3>
-			{{--  </a>  --}}
+			 </a> 
 		</li>
 		<li>
-			{{--  <a href="{{ route('moviment.index') }}">  --}}
+			 <a href="{{ route('movement.index') }}"> 
 				<i class="fa fa-dollar"></i>
 				<h3>Aplicações</h3>
-			{{--  </a>  --}}
+			 </a> 
 		</li>
 		<li>
-			{{--  <a href="{{ route('moviment.all') }}">  --}}
+			 <a href="{{ route('movement.all') }}"> 
 				<i class="fa fa-dollar"></i>
 				<h3>Extrato</h3>
-			{{--  </a>  --}}
+			 </a> 
 		</li>
 	<ul>
 </nav>

@@ -94,7 +94,7 @@ class InstituicaosController extends Controller
     {
         $instituicao = $this->repository->find($id);
 
-        return view('instituicaos.edit', compact('instituicao'));
+        return view('instituicao.edit', ['inst' => $instituicao]);
     }
 
     /**
@@ -107,37 +107,16 @@ class InstituicaosController extends Controller
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(InstituicaoUpdateRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        try {
+        $request = $this->service->update($request->all(), $id);
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+        session()->flash('success', [
+            'success' => $request['success'],
+            'messages' => $request['messages']
+        ]);
 
-            $instituicao = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'Instituicao updated.',
-                'data'    => $instituicao->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+       return redirect()->route('instituicao.index');
     }
 
 

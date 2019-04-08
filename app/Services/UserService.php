@@ -50,8 +50,35 @@ class UserService{
             }
         }
     }
-    public function update(){
-        
+    public function update($data, $id){
+        try {
+            $this->validator->with($data)->passesOrFail(ValidatorInterface::RULE_UPDATE);
+            $usuario = $this->repository->update($data, $id);
+            
+            return[
+                'success' => true,
+                'messages' => 'Usuário atualizado',
+                'data' => $usuario
+            ];
+        } catch (Exception $th) {
+            switch (get_class($th)) {
+                case QueryException::class:
+                return ['success' => false, 'messages' =>  $th->getMessage()];
+                    break;
+                
+                case ValidatorException::class:
+                return ['success' => false, 'messages' =>  $th->getMessageBag()];
+                break;
+                
+                case Exception::class:
+                return ['success' => false, 'messages' =>  $th->getMessage()];
+                break;
+
+                default:
+                return ['success' => false, 'messages' =>  $th->getMessage()];
+                    break;
+            }
+        }
     }
     public function destroy($id){
         try {

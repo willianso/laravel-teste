@@ -29,6 +29,8 @@
 						{!! Form::submit('Remover') !!}
 					{!! Form::close() !!}
 					<a href="{{ route('instituicao.show', $i->id) }}">Detalhes</a>
+					<a href="{{ route('instituicao.edit', $i->id) }}">Editar</a>
+					<a href="{{ route('instituicao.product.index', $i->id) }}">Produtos</a>
 				</td>
 			</tr>
 			@endforeach
